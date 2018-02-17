@@ -15,53 +15,41 @@ def index():
 @app.route('/list')
 def list():
 
-    # REQUEST DATA FROM WEBHOOKS
-    content = request.get_data()
+    # REQUEST DATA FROM WEBHOOKS, CONVERT TO STRING AND SPLIT BY LINES
+    content = str(request.get_data()).splitlines()
 
-    # CONVERT RAW DATA TO STRING
-    str_content = str(content)
-	
-    # DIVIDE DATA INTO SEPERATE LINES
-    str_split = str_content.splitlines()
-
-    # SEPERATE WORDS BY COMMA AND ADD TO A NEW LIST
-    newlist = []
-    for word in str_split:
-        word = word.split(',')
-        newlist.extend(word)
-
-    # REMOVE FORMATTING MARKS
-    rmv_marks = [s.strip("b'") for s in newlist]
+    # SEPERATE WORDS BY COMMA THEN REMOVE FORMATTING MARKS
+    rmv_marks = [
+	    map(
+		    lambda x: x.strip("b'"), 
+		    word.split(','),
+	    ) for word in content
+    ]
 
     # PRINT HEADER
     # print("Shopping List\n")
     p.text("Shopping List:\n")
 
     # ENUMERATE AND PRINT EACH ITEM IN LIST
-    r = 1
-    for x in rmv_marks:
-        # print(str(r) + ". " + x + "\n")
-        p.text(str(r) + ". " + x + "\n")
-        r += 1
+    for num, val in enumerate(rmv_marks, start=1):
+	    # print("{}. {}\n".format(num, val))
+	    p.text("{}. {}\n".format(num, val))
 
     return 'x'
 
 # CREATE 'TO DO' PAGE FOR PRINTING TO DO LIST
 @app.route('/todo')
 def list():
-    content = request.get_data()
-    str_content = str(content)
-    str_split = str_content.splitlines()
-    newlist = []
-    for word in str_split:
-        word = word.split(',')
-        newlist.extend(word)
-    rmv_marks = [s.strip("b'") for s in newlist]
-    p.text("To Do List:\n")
-    r = 1
-    for x in rmv_marks:
-        p.text(str(r) + ". " + x + "\n")
-        r += 1
+    content = str(request.get_data()).splitlines()
+    rmv_marks = [
+	    map(
+		    lambda x: x.strip("b'"), 
+		    word.split(','),
+	    ) for word in content
+    ]
+    p.text("Shopping List:\n")
+    for num, val in enumerate(rmv_marks, start=1):
+	    p.text("{}. {}\n".format(num, val))
     return 'x'
 
 if __name__ == '__main__':
